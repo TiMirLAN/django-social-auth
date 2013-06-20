@@ -23,6 +23,7 @@ from django.utils import simplejson
 from django.utils.importlib import import_module
 
 from social_auth.models import UserSocialAuth
+from social_auth.signals import take_response
 from social_auth.utils import setting, model_to_ctype, ctype_to_model, \
                               clean_partial_pipeline, url_add_parameters, \
                               get_random_string, constant_time_compare, \
@@ -100,6 +101,7 @@ class SocialAuthBackend(object):
         if 'pipeline_index' in kwargs:
             pipeline = pipeline[kwargs['pipeline_index']:]
         else:
+            take_response.send(self.__class__, response)
             kwargs['details'] = self.get_user_details(response)
             kwargs['uid'] = self.get_user_id(kwargs['details'], response)
             kwargs['is_new'] = False
