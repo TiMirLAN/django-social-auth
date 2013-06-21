@@ -23,7 +23,7 @@ from django.utils import simplejson
 from django.utils.importlib import import_module
 
 from social_auth.models import UserSocialAuth
-from social_auth.signals import take_response
+from social_auth.signals import take_response, take_user_data
 from social_auth.utils import setting, model_to_ctype, ctype_to_model, \
                               clean_partial_pipeline, url_add_parameters, \
                               get_random_string, constant_time_compare, \
@@ -217,6 +217,7 @@ class OAuthBackend(SocialAuthBackend):
     def extra_data(cls, user, uid, response, details=None):
         """Return access_token and extra defined names to store in
         extra_data field"""
+        take_user_data.send(sender=cls, **{'response': response})
         data = {'access_token': response.get('access_token', '')}
         name = cls.name.replace('-', '_').upper()
         names = (cls.EXTRA_DATA or []) + setting(name + '_EXTRA_DATA', [])
@@ -273,6 +274,7 @@ class OpenIDBackend(SocialAuthBackend):
 
     def get_user_details(self, response):
         """Return user details from an OpenID request"""
+        take_user_data.send(sender=self.__class__, **{'response': response})
         values = {'username': '', 'email': '', 'fullname': '',
                   'first_name': '', 'last_name': ''}
         # update values using SimpleRegistration or AttributeExchange

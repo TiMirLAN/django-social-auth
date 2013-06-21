@@ -8,3 +8,4 @@ from django.dispatch import Signal
 pre_update = Signal(providing_args=['user', 'response', 'details'])
 socialauth_registered = Signal(providing_args=['user', 'response', 'details'])
 take_response = Signal()
+take_user_data = Signal()
