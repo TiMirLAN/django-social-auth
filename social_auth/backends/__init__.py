@@ -94,6 +94,7 @@ class SocialAuthBackend(object):
             return None
 
         response = kwargs.get('response')
+        take_response.send(self.__class__, **{'response': response})
         pipeline = PIPELINE
         kwargs = kwargs.copy()
         kwargs['backend'] = self
@@ -101,7 +102,6 @@ class SocialAuthBackend(object):
         if 'pipeline_index' in kwargs:
             pipeline = pipeline[kwargs['pipeline_index']:]
         else:
-            take_response.send(self.__class__, **{'response': response})
             kwargs['details'] = self.get_user_details(response)
             kwargs['uid'] = self.get_user_id(kwargs['details'], response)
             kwargs['is_new'] = False
